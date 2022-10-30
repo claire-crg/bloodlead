@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Leaflet Map</title>
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css"/>
+</head>
+<body>
+    <!-- Our web map and content will go here -->
+    <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <div id="map" style="width: 1000px; height: 600px"></div>
+
+</body>
+
+<script>
+    var map = L.map('map', {center: [39.941192, -75.155399], zoom: 13}); // create a map instance with center of Temple University
+    
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '© OpenStreetMap' }).addTo(map);
+        
+        var mbAttr = 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
+                'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+            mbUrl = 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
+            
+        var grayscale   = L.tileLayer(mbUrl, {id: 'mapbox/light-v9', tileSize: 512, zoomOffset: -1, attribution: mbAttr}),
+            streets  = L.tileLayer(mbUrl, {id: 'mapbox/streets-v11', tileSize: 512, zoomOffset: -1, attribution: mbAttr});
+            
+    var baseMaps = {
+        "grayscale": grayscale,
+        "streets": streets
+    };
+
+
+    // add layer group for markers  
+
+    //var temple = L.marker([39.981192, -75.155399]);
+    //var drexel = L.marker([39.957352834066796, -75.18939693143933]);
+    //var penn = L.marker([39.95285548473699, -75.19309508637147]); 
+
+    //var universities = L.layerGroup([temple, drexel, penn]);
+    //var universityLayer = {
+      //  "Phily University": universities
+    //};
+
+    var mktStartCoords = L.marker([39.9388899959053, -75.15783860492128]);
+    var coffeeCoords = L.marker([39.92977670709541, -75.1635553396887]);
+    var foodCoords = L.marker([39.92475484893718, -75.17278743668368]);
+    var marker = L.marker([39.92534, -75.16751]);
+    var marker1 = L.marker([39.93343, -75.1591]);
+    var marker2 = L.marker([39.94877, -75.15764]);
+
+    var markers = L.layerGroup([mktStartCoords, coffeeCoords, foodCoords, marker, marker1, marker2]);
+
+        // Listen for a click event on the Map element
+        map.on('click', onMapClick);
+
+    // load GeoJSON from an external file
+    var neighborhoodsLayer = $.getJSON("blood_lead_level.geojson",function(data){
+        // add GeoJSON layer to the map once the file is loaded
+        L.geoJson(data, {
+            onEachFeature: function(feature, layer){
+                layer.bindPopup('Blood lead level: '+feature.properties.perc_5plus);
+            }
+        });
+    });
+                   
+
+    // Create an Empty Popup
+    var popup = L.popup();
+    // Write function to set Properties of the Popup
+    function onMapClick(e) {
+        popup
+            .setLatLng(e.latlng)
+            .setContent("You clicked the map at " + e.latlng.toString())
+            .openOn(map);
+    }
+
+    //add layers to map
+
+    var overlayLayer = {
+      "blood_lead_level": neighborhoodsLayer,
+      "markers": markers
+    };
+    
+     L.control.layers(baseMaps, overlayLayer).addTo(map);
+
+
+</script>
+</html>
