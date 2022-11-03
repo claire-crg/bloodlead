@@ -19,7 +19,7 @@
 </body>
 
 <script>
-    var map = L.map('map', {center: [39.941192, -75.155399], zoom: 13}); // create a map instance with center of Temple University
+    var map = L.map('map', {center: [39.991192, -75.155399], zoom: 11}); // create a map instance with center of Temple University
     
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '© OpenStreetMap' }).addTo(map);
         
@@ -75,7 +75,7 @@
             "blood_lead_level": neighborhoodsLayer,
             "markers": markers
             };
-            
+
         L.control.layers(baseMaps, overlayLayer).addTo(map);
 
 
