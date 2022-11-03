@@ -3,12 +3,17 @@
 <head>
 	<meta charset="utf-8">
 	<title>Leaflet Map</title>
-	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.2/dist/leaflet.css"
+    integrity="sha256-sA+zWATbFveLLNqWO2gtiw3HL/lh1giY/Inf1BJ0z14="
+    crossorigin=""/>
 </head>
 <body>
     <!-- Our web map and content will go here -->
-    <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.2/dist/leaflet.js"
+    integrity="sha256-o9N1jGDZrf5tS+Ft4gbIK7mYMipq9lqpVJ91xHSyKhg="
+    crossorigin=""></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    
     <div id="map" style="width: 1000px; height: 600px"></div>
 
 </body>
@@ -51,19 +56,34 @@
 
     var markers = L.layerGroup([mktStartCoords, coffeeCoords, foodCoords, marker, marker1, marker2]);
 
-        // Listen for a click event on the Map element
-        map.on('click', onMapClick);
+   
+
 
     // load GeoJSON from an external file
-    var neighborhoodsLayer = $.getJSON("blood_lead_level.geojson",function(data){
+    var neighborhoodsLayer = null;
+    var overlayLayer= null;
+     $.getJSON("blood_lead_level.geojson",function(data){
+        
         // add GeoJSON layer to the map once the file is loaded
-        L.geoJson(data, {
+        var neighborhoodsLayer = L.geoJson(data, {
             onEachFeature: function(feature, layer){
                 layer.bindPopup('Blood lead level: '+feature.properties.perc_5plus);
             }
-        });
+        }).addTo(map);
+
+        var overlayLayer = {
+            "blood_lead_level": neighborhoodsLayer,
+            "markers": markers
+            };
+            
+        L.control.layers(baseMaps, overlayLayer).addTo(map);
+
+
     });
                    
+
+    // Listen for a click event on the Map element
+    map.on('click', onMapClick);
 
     // Create an Empty Popup
     var popup = L.popup();
@@ -76,13 +96,8 @@
     }
 
     //add layers to map
-
-    var overlayLayer = {
-      "blood_lead_level": neighborhoodsLayer,
-      "markers": markers
-    };
-    
-     L.control.layers(baseMaps, overlayLayer).addTo(map);
+    //layerControl.addBaseLayer(grayscale, "grayscale");
+    //layerControl.addOverlay(overlayLayer, "overlayLayer");
 
 
 </script>
